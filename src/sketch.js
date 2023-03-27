@@ -3,7 +3,7 @@ function preload() {
 }
 
 let serial // variable to hold an instance of the serialport library
-let portName
+let portName = "COM9"
 let inData // for incoming serial data
 let options = {
 	d : {
@@ -22,7 +22,7 @@ let options = {
 function setup() {
 	createCanvas(window.innerWidth, window.innerHeight);
 	background(0, 100, 200);
-	serial = new p5.SerialPort(); // make a new instance of the serialport library
+	serial = new p5.SerialPort('138.251.255.67'); // make a new instance of the serialport library
 	serial.on("list", printList); // set a callback function for the serialport list event
 	serial.on("connected", serverConnected); // callback for connecting to the server
 	serial.on("open", portOpen); // callback for the port opening
@@ -30,7 +30,7 @@ function setup() {
 	serial.on("error", serialError); // callback for errors
 	serial.on("close", portClose); // callback for the port closing
 	serial.list(); // list the serial ports
-	serial.open(portName); // open a serial port
+	serial.open(portName, ({baudRate: 115200})); // open a serial port
 	// serial.list(); // list the serial ports
 	playSound();
 	setupUI();
@@ -61,13 +61,15 @@ function portOpen() {
 }
 
 function serialEvent() {
+	console.log("serial event")
 	// read a string from the serial port:
 	var inString = serial.readLine();
+	console.log(inString)
 	// check to see that there's actually a string there:
 	let inarr = inString.split(":")
-	if (inarr.length() != 3) return
+	if (inarr.length != 3) return
 
-	if (updateOptions(...inarr)) updateSound(...inarr)
+	if (updateOption(...inarr)) updateSound(...inarr)
 
 }
 
