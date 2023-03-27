@@ -9,6 +9,16 @@ let limits = {
 		max : 9999,
 	}
 }
+let nums = {
+    d : {
+        min : 1,
+        max : 4
+    },
+    a : {
+        min : 1,
+        max : 3
+    }
+}
 limits.d.range = limits.d.max - limits.d.min
 limits.a.range = limits.a.max - limits.a.min
 
