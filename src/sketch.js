@@ -1,8 +1,16 @@
 var bgImage;
+var jellyfish = {
+	1:null,
+	2:null,
+	3:null,
+	4:null,
+}
 
 function preload() {
 	setupSound();
 	bgImage = loadImage("../imgs/pexels-irina-iriser-1086584.jpg")
+	for (let i = 1; i <= 4; i++)
+		jellyfish[i] = loadImage("../imgs/jellyfish-" + i + ".png")
 }
 
 let serial // variable to hold an instance of the serialport library
@@ -131,8 +139,9 @@ function draw() {
 		image(bgImage, 0, 0, window.innerWidth, window.innerHeight)
 		noStroke()
 		for (let i = 1; i <= 4; i++) {
-			fill(options.d[i] == 1 ? color('magenta') : color('blue'))
-			square(i % 2 * 50 + 100, i / 2 * 50 + 100, 50)
+			// fill(options.d[i] == 1 ? color('magenta') : color('blue'))
+			// square(i % 2 * 50 + 100, i / 2 * 50 + 100, 50)
+			if (options.d[i] == 1) image(jellyfish[i], 0, 0, window.innerWidth, window.innerHeight)
 		}
 	}
 }
