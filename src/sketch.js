@@ -1,5 +1,8 @@
+var bgImage;
+
 function preload() {
 	setupSound();
+	bgImage = loadImage("../imgs/pexels-irina-iriser-1086584.jpg")
 }
 
 let serial // variable to hold an instance of the serialport library
@@ -19,7 +22,8 @@ let options = {
 	}
 }
 
-var port;
+var inPort;
+var outPort
 var reader;
 var inputDone;
 var outputDone;
@@ -33,14 +37,23 @@ window.addEventListener("DOMContentLoaded", (event) => {
 	console.log("Serial is " + ('serial' in navigator ? '' : 'NOT ') + "supported")
 });
 
-let connect = async () => {
-	let port = await navigator.serial.requestPort()
-	await port.open({baudRate: 115200})
-	readLoop(port)
+let connectIn = async () => {
+	inPort = await navigator.serial.requestPort()
+	await inPort.open({baudRate: 115200})
+	let decoder = new TextDecoderStream();
+	inputDone = inPort.readable.pipeTo(decoder.writable);
+	inputStream = decoder.readable
+	  .pipeThrough(new TransformStream(new LineBreakTransformer()));
+	readLoop()
 }
 
-async function mousePressed() {
-	await connect()
+let connectOut = async () => {
+	outPort = await navigator.serial.requestPort()
+	await outPort.open({baudRate: 9600})
+	const encoder = new TextEncoderStream();
+	outputDone = encoder.readable.pipeTo(outPort.writable);
+	outputStream = encoder.writable;
+	// writeToStream('\x03', 'echo(false);')
 }
 
 class LineBreakTransformer {
@@ -61,14 +74,11 @@ class LineBreakTransformer {
 	}
 }
 
-async function readLoop(port) {
+async function readLoop() {
 	// let decoder = new TextDecoderStream();
 	// inputDone = port.readable.pipeTo(decoder.writable);
 	// inputStream = decoder.readable;
-	let decoder = new TextDecoderStream();
-	inputDone = port.readable.pipeTo(decoder.writable);
-	inputStream = decoder.readable
-	  .pipeThrough(new TransformStream(new LineBreakTransformer()));
+
 
 	let reader = inputStream.getReader();
 	
@@ -77,6 +87,7 @@ async function readLoop(port) {
 		if (value) {
 			console.log(value)
 			serialEvent(value)
+			if (outputStream) writeToStream(value)
 		}
 		if (done) {
 		  console.log('[readLoop] DONE', done);
@@ -84,6 +95,15 @@ async function readLoop(port) {
 		  break;
 		}
 	}
+}
+
+async function writeToStream(...lines) {
+	const writer = outputStream.getWriter();
+	lines.forEach((line) => {
+	console.log('[SEND]', line);
+	writer.write(line + '\n');
+	});
+	writer.releaseLock();
 }
 
 function setup() {
@@ -107,7 +127,14 @@ function draw() {
 	//background(0);
 	//fill(255);
 	//text("sensor value: " + inData, 30, 30);
-	
+	if (setupDone) {
+		image(bgImage, 0, 0, window.innerWidth, window.innerHeight)
+		noStroke()
+		for (let i = 1; i <= 4; i++) {
+			fill(options.d[i] == 1 ? color('magenta') : color('blue'))
+			square(i % 2 * 50 + 100, i / 2 * 50 + 100, 50)
+		}
+	}
 }
 
 // // get the list of ports:
@@ -136,7 +163,11 @@ function serialEvent(message) {
 	let inarr = message.split(":")
 	if (inarr.length != 3) return
 
-	if (checkInput(...inarr)) updateSound[inarr[0]](inarr[1], inarr[2])
+	if (checkInput(...inarr)) {
+		updateSound[inarr[0]](inarr[1], inarr[2])
+		options[inarr[0]][inarr[1]] = inarr[2]
+		console.log(options[inarr[0]][inarr[1]])
+	}
 }
 
 let checkInput = (type, num, val) => checkType(type) && checkNum(type, num) && checkVal(type, val)

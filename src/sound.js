@@ -23,9 +23,9 @@ limits.d.range = limits.d.max - limits.d.min
 limits.a.range = limits.a.max - limits.a.min
 
 const analogueKeys = {
-    BPM : 1,
+    BPM : 3,
     pitch : 2,
-    effect : 3
+    effect : 1
 }
 
 let phraseNames = {
@@ -88,7 +88,7 @@ let updateAnalogue = {
 }
 
 function setupSound() {
-    updateAnalogue[analogueKeys.BPM] = (val) => changeBPM(rescale(val, 80, 120))
+    updateAnalogue[analogueKeys.BPM] = (val) => changeBPM(rescale(val, 80, 140))
     updateAnalogue[analogueKeys.pitch] = (val) => pitchMul = rescale(val, 0.667, 1.5)
     updateAnalogue[analogueKeys.effect] = (val) => effect.set(rescale(val, -5, 5), 3, 3)
     effect = new p5.Panner3D()

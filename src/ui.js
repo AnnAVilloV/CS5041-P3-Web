@@ -10,6 +10,11 @@ let inputs = {
         2 : null,
         3 : null,
         4 : null,
+    },
+    button: {
+        in: null,
+        out: null,
+        done: null,
     }
 }
 
@@ -21,6 +26,26 @@ function setupUI() {
     inputs.d[2] = createDigitalToggle(300, 200, 2)
     inputs.d[3] = createDigitalToggle(300, 300, 3)
     inputs.d[4] = createDigitalToggle(300, 400, 4)
+	inputs.button.in = createButton("Set In Port")
+	inputs.button.in.position(500, 300)
+	inputs.button.in.size(100, 50)
+	inputs.button.in.mousePressed(connectIn)
+	inputs.button.out = createButton("Set Out Port")
+	inputs.button.out.position(500, 500)
+	inputs.button.out.size(100, 50)
+	inputs.button.out.mousePressed(connectOut)
+	inputs.button.done = createButton("Finish Setup")
+	inputs.button.done.position(500, 700)
+	inputs.button.done.size(100, 50)
+	inputs.button.done.mousePressed(switchUI)
+}
+
+let setupDone = false;
+function switchUI() {
+    // Object.entries(inputs).forEach(e => Object.entries(e).forEach(x => x.remove()))
+    removeElements()
+    // add elements representing state, make it look nice
+    setupDone = true;
 }
 
 function createAnalogueSlider(x, y, num) {
