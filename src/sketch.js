@@ -180,7 +180,7 @@ function draw() {
 					// optionChanged[key][num] = false
 				})
 			})
-			writeToStream(lines)
+			if (lines.length > 0) writeToStream(lines)
 		}
 	}
 }
@@ -213,9 +213,9 @@ function serialEvent(message) {
 
 	if (checkInput(...inarr)) {
 		updateSound[inarr[0]](inarr[1], inarr[2])
+		if (inarr[2] != options[inarr[0]][inarr[1]]) optionChanged[inarr[0]][inarr[1]] = true
 		options[inarr[0]][inarr[1]] = inarr[2]
 		console.log(options[inarr[0]][inarr[1]])
-		optionChanged[inarr[0]][inarr[1]] = true
 	}
 }
 
