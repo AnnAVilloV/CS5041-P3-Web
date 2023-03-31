@@ -1,8 +1,16 @@
 var bgImage;
+var jellyfish = {
+	1:null,
+	2:null,
+	3:null,
+	4:null,
+}
 
 function preload() {
 	setupSound();
 	bgImage = loadImage("../imgs/pexels-irina-iriser-1086584.jpg")
+	for (let i = 1; i <= 4; i++)
+		jellyfish[i] = loadImage("../imgs/jellyfish-" + i + ".png")
 }
 
 let serial // variable to hold an instance of the serialport library
@@ -19,6 +27,20 @@ let options = {
 		1 : 5000,
 		2 : 5000,
 		3 : 5000
+	}
+}
+
+let optionChanged = {
+	d: {
+		1: false,
+		2: false,
+		3: false,
+		4: false
+	},
+	a: {
+		1: false,
+		2: false,
+		3: false
 	}
 }
 
@@ -87,7 +109,7 @@ async function readLoop() {
 		if (value) {
 			console.log(value)
 			serialEvent(value)
-			if (outputStream) writeToStream(value)
+			// if (outputStream) writeToStream(value)
 		}
 		if (done) {
 		  console.log('[readLoop] DONE', done);
@@ -123,6 +145,11 @@ function setup() {
 	setupUI();
 }
 
+
+let setFramesPerWrite = f => console.log("Set frames per write to " + (framesPerWrite = f))
+
+let framesPerWrite = 5
+var i = 0
 function draw() {
 	//background(0);
 	//fill(255);
@@ -131,8 +158,24 @@ function draw() {
 		image(bgImage, 0, 0, window.innerWidth, window.innerHeight)
 		noStroke()
 		for (let i = 1; i <= 4; i++) {
-			fill(options.d[i] == 1 ? color('magenta') : color('blue'))
-			square(i % 2 * 50 + 100, i / 2 * 50 + 100, 50)
+			// fill(options.d[i] == 1 ? color('magenta') : color('blue'))
+			// square(i % 2 * 50 + 100, i / 2 * 50 + 100, 50)
+			if (options.d[i] == 1) image(jellyfish[i], 0, 0, window.innerWidth, window.innerHeight)
+		}
+	}
+
+	if (i < framesPerWrite) i++
+	else {
+		i = 0
+		if (outputStream) {
+			lines = []
+			Object.keys(options).forEach(key => {
+				Object.keys(options[key]).forEach(num => {
+					if (optionChanged[key][num]) lines.push(key + ":" + num + ":" + options[num][key])
+					optionChanged[key][num] = false
+				})
+			})
+			writeToStream(lines)
 		}
 	}
 }
@@ -167,6 +210,7 @@ function serialEvent(message) {
 		updateSound[inarr[0]](inarr[1], inarr[2])
 		options[inarr[0]][inarr[1]] = inarr[2]
 		console.log(options[inarr[0]][inarr[1]])
+		optionChanged[inarr[0]][inarr[1]] = true
 	}
 }
 
