@@ -18,6 +18,8 @@ let inputs = {
     }
 }
 
+let outSpeedSlider = null
+
 function setupUI() {
     inputs.a[1] = createAnalogueSlider(100, 100, 1)
     inputs.a[2] = createAnalogueSlider(100, 200, 2)
@@ -26,18 +28,20 @@ function setupUI() {
     inputs.d[2] = createDigitalToggle(300, 200, 2)
     inputs.d[3] = createDigitalToggle(300, 300, 3)
     inputs.d[4] = createDigitalToggle(300, 400, 4)
-	inputs.button.in = createButton("Set In Port")
-	inputs.button.in.position(500, 300)
-	inputs.button.in.size(100, 50)
-	inputs.button.in.mousePressed(connectIn)
-	inputs.button.out = createButton("Set Out Port")
-	inputs.button.out.position(500, 500)
-	inputs.button.out.size(100, 50)
-	inputs.button.out.mousePressed(connectOut)
-	inputs.button.done = createButton("Finish Setup")
-	inputs.button.done.position(500, 700)
-	inputs.button.done.size(100, 50)
-	inputs.button.done.mousePressed(switchUI)
+	inputs.button.in = makeButton("Set In Port", 100, connectIn)
+	inputs.button.out = makeButton("Set In Port", 200, connectOut)
+	inputs.button.done = makeButton("Finish Setup", 300, switchUI)
+    outSpeedSlider = createSlider(0, 60, 5, 1)
+    outSpeedSlider.position(500, 50)
+    outSpeedSlider.input(() => setFramesPerWrite(outSpeedSlider.value()))
+}
+
+function makeButton(label, yPos, callback) {
+    let button = createButton(label)
+    button.position(500, yPos)
+    button.size(100, 50)
+    button.mousePressed(callback)
+    return button
 }
 
 let setupDone = false;

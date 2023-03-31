@@ -132,7 +132,9 @@ function setup() {
 }
 
 
-const framesPerWrite = 5
+let setFramesPerWrite = f => console.log("Set frames per write to " + (framesPerWrite = f))
+
+let framesPerWrite = 5
 var i = 0
 function draw() {
 	//background(0);
