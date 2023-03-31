@@ -95,7 +95,7 @@ async function readLoop() {
 		if (value) {
 			console.log(value)
 			serialEvent(value)
-			if (outputStream) writeToStream(value)
+			// if (outputStream) writeToStream(value)
 		}
 		if (done) {
 		  console.log('[readLoop] DONE', done);
@@ -131,6 +131,9 @@ function setup() {
 	setupUI();
 }
 
+
+const framesPerWrite = 5
+var i = 0
 function draw() {
 	//background(0);
 	//fill(255);
@@ -142,6 +145,20 @@ function draw() {
 			// fill(options.d[i] == 1 ? color('magenta') : color('blue'))
 			// square(i % 2 * 50 + 100, i / 2 * 50 + 100, 50)
 			if (options.d[i] == 1) image(jellyfish[i], 0, 0, window.innerWidth, window.innerHeight)
+		}
+	}
+
+	if (i < framesPerWrite) i++
+	else {
+		i = 0
+		if (outputStream) {
+			lines = []
+			Object.keys(options).forEach(key => {
+				Object.keys(options[key]).forEach(num => {
+					lines.push(key + ":" + num + ":" + options[num][key])
+				})
+			})
+			writeToStream(lines)
 		}
 	}
 }
