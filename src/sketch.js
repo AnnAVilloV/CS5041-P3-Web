@@ -30,6 +30,20 @@ let options = {
 	}
 }
 
+let optionChanged = {
+	d: {
+		1: false,
+		2: false,
+		3: false,
+		4: false
+	},
+	a: {
+		1: false,
+		2: false,
+		3: false
+	}
+}
+
 var inPort;
 var outPort
 var reader;
@@ -157,7 +171,8 @@ function draw() {
 			lines = []
 			Object.keys(options).forEach(key => {
 				Object.keys(options[key]).forEach(num => {
-					lines.push(key + ":" + num + ":" + options[num][key])
+					if (optionChanged[key][num]) lines.push(key + ":" + num + ":" + options[num][key])
+					optionChanged[key][num] = false
 				})
 			})
 			writeToStream(lines)
@@ -195,6 +210,7 @@ function serialEvent(message) {
 		updateSound[inarr[0]](inarr[1], inarr[2])
 		options[inarr[0]][inarr[1]] = inarr[2]
 		console.log(options[inarr[0]][inarr[1]])
+		optionChanged[inarr[0]][inarr[1]] = true
 	}
 }
 
