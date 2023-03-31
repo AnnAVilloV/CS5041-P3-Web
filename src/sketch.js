@@ -169,10 +169,14 @@ function draw() {
 		i = 0
 		if (outputStream) {
 			lines = []
+			// console.log(options)
 			Object.keys(options).forEach(key => {
+				// console.log(key)
+				// console.log(options[key])
 				Object.keys(options[key]).forEach(num => {
+					// console.log(options[num])
 					// if (optionChanged[key][num]) 
-					lines.push(key + ":" + num + ":" + options[num][key])
+					lines.push(key + ":" + num + ":" + options[key][num])
 					// optionChanged[key][num] = false
 				})
 			})
