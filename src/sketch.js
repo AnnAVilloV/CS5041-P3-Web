@@ -128,9 +128,14 @@ async function writeToStream(...lines) {
 	lines.forEach((line) => {
 	console.log('[SEND]', line);
 	writer.write(line + '\n');
+	sleep(300)
 	});
 	writer.releaseLock();
 }
+
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
 function setup() {
 	createCanvas(window.innerWidth, window.innerHeight);
