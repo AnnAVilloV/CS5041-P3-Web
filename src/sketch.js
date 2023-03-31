@@ -171,8 +171,9 @@ function draw() {
 			lines = []
 			Object.keys(options).forEach(key => {
 				Object.keys(options[key]).forEach(num => {
-					if (optionChanged[key][num]) lines.push(key + ":" + num + ":" + options[num][key])
-					optionChanged[key][num] = false
+					// if (optionChanged[key][num]) 
+					lines.push(key + ":" + num + ":" + options[num][key])
+					// optionChanged[key][num] = false
 				})
 			})
 			writeToStream(lines)

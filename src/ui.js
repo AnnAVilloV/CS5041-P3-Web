@@ -29,7 +29,7 @@ function setupUI() {
     inputs.d[3] = createDigitalToggle(300, 300, 3)
     inputs.d[4] = createDigitalToggle(300, 400, 4)
 	inputs.button.in = makeButton("Set In Port", 100, connectIn)
-	inputs.button.out = makeButton("Set In Port", 200, connectOut)
+	inputs.button.out = makeButton("Set Out Port", 200, connectOut)
 	inputs.button.done = makeButton("Finish Setup", 300, switchUI)
     outSpeedSlider = createSlider(0, 60, 5, 1)
     outSpeedSlider.position(500, 50)
