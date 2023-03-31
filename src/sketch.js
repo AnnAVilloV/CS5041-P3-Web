@@ -49,7 +49,6 @@ var outPort
 var reader;
 var inputDone;
 var outputDone;
-var inputStream;
 var outputStream;
 
 window.addEventListener("DOMContentLoaded", (event) => {
@@ -64,9 +63,9 @@ let connectIn = async () => {
 	await inPort.open({baudRate: 115200})
 	let decoder = new TextDecoderStream();
 	inputDone = inPort.readable.pipeTo(decoder.writable);
-	inputStream = decoder.readable
+	let inputStream = decoder.readable
 	  .pipeThrough(new TransformStream(new LineBreakTransformer()));
-	readLoop()
+	readLoop(inputStream, true)
 }
 
 let connectOut = async () => {
@@ -76,6 +75,11 @@ let connectOut = async () => {
 	outputDone = encoder.readable.pipeTo(outPort.writable);
 	outputStream = encoder.writable;
 	// writeToStream('\x03', 'echo(false);')
+	let decoder = new TextDecoderStream();
+	inputDone = outPort.readable.pipeTo(decoder.writable);
+	let inputStream = decoder.readable
+	  .pipeThrough(new TransformStream(new LineBreakTransformer()));
+	readLoop(inputStream)
 }
 
 class LineBreakTransformer {
@@ -96,7 +100,7 @@ class LineBreakTransformer {
 	}
 }
 
-async function readLoop() {
+async function readLoop(inputStream, event=false) {
 	// let decoder = new TextDecoderStream();
 	// inputDone = port.readable.pipeTo(decoder.writable);
 	// inputStream = decoder.readable;
@@ -108,7 +112,7 @@ async function readLoop() {
 		const { value, done } = await reader.read();
 		if (value) {
 			console.log(value)
-			serialEvent(value)
+			if(event) serialEvent(value)
 			// if (outputStream) writeToStream(value)
 		}
 		if (done) {
@@ -175,9 +179,8 @@ function draw() {
 				// console.log(options[key])
 				Object.keys(options[key]).forEach(num => {
 					// console.log(options[num])
-					// if (optionChanged[key][num]) 
-					lines.push(key + ":" + num + ":" + options[key][num])
-					// optionChanged[key][num] = false
+					if (optionChanged[key][num]) lines.push(key + ":" + num + ":" + options[key][num])
+					optionChanged[key][num] = false
 				})
 			})
 			writeToStream(lines)
