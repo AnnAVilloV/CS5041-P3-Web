@@ -8,7 +8,7 @@ var jellyfish = {
 
 function preload() {
 	setupSound();
-	bgImage = loadImage("../imgs/pexels-irina-iriser-1086584.jpg")
+	bgImage = loadImage("../imgs/jellyfish-bg.jpg")
 	for (let i = 1; i <= 4; i++)
 		jellyfish[i] = loadImage("../imgs/jellyfish-" + i + ".png")
 }
