@@ -126,7 +126,18 @@ async function readLoop(inputStream, event=false) {
 async function writeToStream(...lines) {
 	const writer = outputStream.getWriter();
 	lines.forEach((line) => {
+
+    //tidy up
+
+
 	console.log('[SEND]', line);
+	if (typeof line == String && line.charAt(0) == 'd' )
+		for (let i = 0; i < 3; i++)
+			writer.write(line + '\n');
+	if (typeof line == String && line.charAt(0) == 'a' && line.charAt(2) == '2' )
+		for (let i = 0; i < 3; i++)
+			writer.write(line + '\n');
+		
 	writer.write(line + '\n');
 	sleep(300)
 	});
@@ -156,6 +167,7 @@ function setup() {
 
 
 let setFramesPerWrite = f => console.log("Set frames per write to " + (framesPerWrite = f))
+var messageQueue = [];
 
 let framesPerWrite = 5
 var i = 0
@@ -177,18 +189,19 @@ function draw() {
 	else {
 		i = 0
 		if (outputStream) {
-			lines = []
+			// messageQueue = []
 			// console.log(options)
 			Object.keys(options).forEach(key => {
 				// console.log(key)
 				// console.log(options[key])
 				Object.keys(options[key]).forEach(num => {
-					// console.log(options[num])
-					if (optionChanged[key][num]) lines.push(key + ":" + num + ":" + options[key][num])
+					//  console.log(options[num])
+					// if (optionChanged[key][num]) messageQueue.push(key + ":" + num + ":" + options[key][num])
+					if (optionChanged[key][num]) messageQueue.push(key + ":" + num + ":" + options[key][num])
 					optionChanged[key][num] = false
 				})
 			})
-			if (lines.length > 0) writeToStream(lines)
+			if (messageQueue.length > 0) writeToStream(messageQueue.pop())
 		}
 	}
 }
